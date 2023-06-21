@@ -6,7 +6,6 @@ import Search from "./Search";
 function PlantPage() {
   const plantAPI = "http://localhost:6001/plants"
   const [plants, setPlants] = useState([]);
-  const [refresh, setRefresh] = useState(false);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -15,7 +14,7 @@ function PlantPage() {
       .then(plantsList => {
         setPlants(() => plantsList);
       })
-  }, [refresh])
+  }, [])
 
   function handleChange(event){
     setSearch(() => event.target.value)
@@ -23,22 +22,23 @@ function PlantPage() {
 
   function handleSubmitForm(event){
     event.preventDefault();
-    
+    const newPlant = {
+      name: event.target.name.value,
+      image: event.target.image.value,
+      price: parseFloat(event.target.price.value)
+    }
+
     const postObj = {
       method: 'POST',
       headers: {"Content-type": "application/json"},
-      body: JSON.stringify({
-        name: event.target.name.value,
-        image: event.target.image.value,
-        price: parseFloat(event.target.price.value)
-      })
+      body: JSON.stringify(newPlant)
     }
 
-    fetch(plantAPI, postObj)
+    fetch(plantAPI, postObj);
     event.target.name.value = "";
     event.target.image.value = "";
     event.target.price.value = "";
-    setRefresh(() => !refresh)
+    setPlants(() => [...plants, newPlant]);
   }
 
   const plantsToDisplay = plants.filter((plant) => {
